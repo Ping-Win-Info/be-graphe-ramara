@@ -1,4 +1,7 @@
-# BEGraph RAMARA ELOUALI; INSA Toulouse
+# BEGraph RAMARA; INSA Toulouse
 
-## On commence
+## Je recommence depuis le début de l'algorithme de Dijkstra
+
+
+
 
