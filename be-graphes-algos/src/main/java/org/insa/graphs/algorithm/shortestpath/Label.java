@@ -46,7 +46,7 @@ public class Label implements Comparable<Label>{
 	   this.père=père;
    }
    
-   public double getCout() {
+   public double getCost() {
 	   return cout ;
    }
    
@@ -55,22 +55,15 @@ public class Label implements Comparable<Label>{
    }
    
    
-  public double getCost() {
-	  return this.cout;
-  }
-  
-  public double getTotalCost() {
-	  return this.cout;
-  }
+    
 
 
 
 @Override
 //Comparer 2 couts 
- public int compareTo(Label label) {
-	int comparaison=Double.compare(this.getTotalCost(), label.getTotalCost());
-			return comparaison;
-}
+ public int compareTo(Label autre) {
+	
+			return Double.valueOf(this.getCost()-autre.getCost()).intValue(); 
    
    
 
