@@ -59,12 +59,13 @@ public class Label implements Comparable<Label>{
 
 
 
-@Override
-//Comparer 2 couts 
- public int compareTo(Label autre) {
-	
-			return Double.valueOf(this.getCost()-autre.getCost()).intValue(); 
-   
-   
+   @Override
+   //Comparer 2 couts 
+   public int compareTo(Label autre) {
+      
+      return Double.valueOf(this.getCost()-autre.getCost()).intValue(); 
+      
+      
 
+   }
 }

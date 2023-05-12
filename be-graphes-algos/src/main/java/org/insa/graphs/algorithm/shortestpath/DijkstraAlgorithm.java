@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
+
 import org.insa.graphs.algorithm.AbstractSolution.Status;
 import org.insa.graphs.algorithm.utils.BinaryHeap;
 import org.insa.graphs.model.Arc;
@@ -17,10 +19,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
     }
     
-    protected Label NewLabel(Node node, boolean marque, Arc père,ShortestPathData data) {
-    	return new Label(node,marque,père);
-    }
-
     @Override
     protected ShortestPathSolution doRun() {
     	 final ShortestPathData data = getInputData();
@@ -32,7 +30,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
          //On a besoin d'init les labels de tout le monde avant de mettre des choses dedans
          int i =0;
          for (Node node : graph.getNodes()) {//On parcours tout les sommets du graphe
-            labels[i]=new Label(node, false, null);//et on les mets tous avec un cout infini ( par défault )
+            labels[i]=new Label(node, false, null);//NB: on les mets tous avec un cout infini ( par défault )
             i++;
          }
 
@@ -47,14 +45,15 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
          queue.insert(labels[data.getOrigin().getId()]);
 
          //Initialisation faite ! 
-
-
+         
+         
          //Itération 
          boolean trouver = false;
-
+         //System.out.println(!queue.isEmpty() && !trouver);
          while (!queue.isEmpty() && !trouver) { //tant qu'il y'a des éléments dans la pile (=non marqué)
             Label X = queue.findMin(); //NB : à la première itération ça sera le sommet origine
             X.setMarque(true); //On le marque à vrai
+            notifyNodeMarked(X.getSommet());
             queue.remove(X);; // et on le retire
             
             trouver = (data.getDestination()==X.getSommet()); //on arrete la boucle une fois qu'on a trouver notre node d'arrivée
@@ -63,19 +62,27 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             //pour tous les successeurs de X
             for (Arc successeur : X.getSommet().getSuccessors()) { //NB : les successeurs d'un node sont des arcs à qui on peut accéder au cout avec data.getCost
                 //On va chercher le successeur dans notre liste de label
+                //System.out.println("for");
                 Label Y = labels[successeur.getDestination().getId()];
-                if (Y.isMarque() == false) {//si not Mark(y)
-
-                    //Cost(y) <- min (cost(y), cost(x) + W(x,y))
-                    Y.setCout(Math.min(Y.getCost(), X.getCost() + data.getCost(successeur)));
-                    
-                    //if mis à jour
+                /* test
+                if (Y.isMarque()) {
+                System.out.println(Y.getCost()); 
+                } 
+                */
+                
+                if (Y.isMarque() == false && data.isAllowed(successeur)){//si not Mark(y)
                     if (Y.getCost() > X.getCost() + data.getCost(successeur)) {
+                        //Cost(y) <- min (cost(y), cost(x) + W(x,y))
+                        Y.setCout(X.getCost() + data.getCost(successeur));
+                        
+                        //System.out.println(data.getCost(successeur)); 
+                        
+                    
                         queue.insert(Y);
                         //Father(y) <- x ( sous entendu l'arc de x à y donc successeur)
                         Y.setPère(successeur);
                     }
-                }
+                } 
             }
          }
 
@@ -83,11 +90,12 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         //Je copie-colle la création de la solution de Bellman-ford. avec PredecessorsArcs = labels(i).getPère
 
         // Destination has no predecessor, the solution is infeasible...
-        if (labels[data.getDestination().getId()].getPère() == null) { 
+        if (!trouver || labels[data.getDestination().getId()].getPère() == null) {
+            
             solution = new ShortestPathSolution(data, Status.INFEASIBLE);
         }
         else {
-
+            
             // The destination has been found, notify the observers.
             notifyDestinationReached(data.getDestination());
 
