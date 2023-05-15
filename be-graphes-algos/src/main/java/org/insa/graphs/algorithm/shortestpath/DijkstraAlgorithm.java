@@ -26,7 +26,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
          Graph graph= data.getGraph();
          Label[] labels = new Label[graph.size()];
 
-         //Initialisation
+         //Initialisation//TODO (AStar) Mettre l'initialisation en dehors du doRun() et juste redéfinir la méthode de l'initialisation dans AStar avec LabelStar.
          //On a besoin d'init les labels de tout le monde avant de mettre des choses dedans
          int i =0;
          for (Node node : graph.getNodes()) {//On parcours tout les sommets du graphe
