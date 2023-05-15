@@ -51,10 +51,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
          boolean trouver = false;
          //System.out.println(!queue.isEmpty() && !trouver);
          while (!queue.isEmpty() && !trouver) { //tant qu'il y'a des éléments dans la pile (=non marqué)
-            Label X = queue.findMin(); //NB : à la première itération ça sera le sommet origine
+            Label X = queue.deleteMin(); //NB : à la première itération ça sera le sommet origine
             X.setMarque(true); //On le marque à vrai
-            notifyNodeMarked(X.getSommet());
-            queue.remove(X);; // et on le retire
+            //notifyNodeMarked(X.getSommet()); //TODO : le réactiver pour la version final ( je désactive pour les tests )
+            // et on le retire
             
             trouver = (data.getDestination()==X.getSommet()); //on arrete la boucle une fois qu'on a trouver notre node d'arrivée
 
@@ -73,11 +73,14 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                 if (Y.isMarque() == false && data.isAllowed(successeur)){//si not Mark(y)
                     if (Y.getCost() > X.getCost() + data.getCost(successeur)) {
                         //Cost(y) <- min (cost(y), cost(x) + W(x,y))
-                        Y.setCout(X.getCost() + data.getCost(successeur));
                         
+                        //TODO : 
                         //System.out.println(data.getCost(successeur)); 
                         
-                    
+                        if (queue.exist(Y)) {//si Y est déjà dans le tas, alors on le remove et on le remplace par la version mis à jour
+                            queue.remove(Y);
+                        }
+                        Y.setCout(X.getCost() + data.getCost(successeur));
                         queue.insert(Y);
                         //Father(y) <- x ( sous entendu l'arc de x à y donc successeur)
                         Y.setPère(successeur);

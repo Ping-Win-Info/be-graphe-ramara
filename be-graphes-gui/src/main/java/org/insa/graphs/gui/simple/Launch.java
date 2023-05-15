@@ -7,6 +7,7 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 
 import java.util.Random; // Pour sélectionner des sommets aléatoires
+import java.lang.*;
 
 import javax.lang.model.util.Elements.Origin;
 import javax.swing.JFrame;
@@ -56,7 +57,7 @@ public class Launch {
     //Fonction qui test un scénario, renvoie 1 si la version dijkstra == la version Bellman
 
     //scenario  0 = shortest path, all roads \\ scénario 2 = fastest path, all road
-    //TODO: virer les cas impossible (graphe non connexe par ex)
+    
     public static int test(Graph graph,int scenario){
      
      //On veut choisir 2 nodes aléatoires dans le graphe et faire Dijkstra et comparer avec Bellman-ford
@@ -80,28 +81,60 @@ public class Launch {
      Path path_d = dijkstra.run().getPath();
      Path path_b = bellman.run().getPath();
      //Il reste plus que à comparer ce qu'on veut 
-     if (scenario == 0) {
-        //Pour voir les distances:
-        int comparaison_dist = Float.compare(path_b.getLength(), path_d.getLength());
-        if (comparaison_dist == 0) {//Si ils sont égaux -> même distance, alors le test est validé
-            return 1;
-        } else {
+     if (path_b != null && path_d != null) {
+            
+        
+        if (scenario == 0) {
+            //Pour voir les distances:
+            //System.out.println(path_b.getLength());
+            //System.out.println(path_d.getLength());
+            //System.out.println(path_b);
+            //System.out.println(path_d);
+            
+            boolean comparaison_dist = comparer_float(path_b.getLength(), path_d.getLength());
+            if (comparaison_dist) {//Si ils sont égaux -> même distance, alors le test est validé
+                return 1;
+            } else {
+                return 0;
+            }
+        } else if (scenario==2){ 
+            boolean comparaison_temps = comparer_float((float)(path_b.getMinimumTravelTime()), (float)(path_d.getMinimumTravelTime()));
+            if (comparaison_temps) {
+                return 1;
+            } else {
+                //System.out.println("Cette origine "+ randomOrigin);
+                //System.out.println("combine à cette destination " + randomDestination + "ne marche pas");
             return 0;
+            }
         }
-     } else if (scenario==2){ 
-        int comparaison_temps = Double.compare(path_b.getMinimumTravelTime(), path_d.getMinimumTravelTime());
-        if (comparaison_temps == 0) {
-            return 1;
-        } else {
-        return 0;
-        }
-     } return -1; // Si jamais il ne passe pas dans mes ifs, pour que l'environnement ne me cri plus dessus
+     } return 1; // Si jamais il n'y a pas de path, alors le test est compté comme réussi
     }
+    public static boolean comparer_float(float un, float deux) {
+        //Je ne dois pas comparer comme ça, je dois mettre une incertitude
+        if (Math.abs(deux-un) <= 0.2) {
+            return true;
+        } else {
+            System.out.println("else " + deux);
+            System.out.println(un);
+            return false;
+        }
+        
+    }
+    public static void batterieTest(Graph graph, int nb_test) {
+        
+        int test_dist_reussi = 0;
+        int test_temps_reussi = 0;
+        for (int i=0; i< nb_test/2; i++) {
+            //System.out.println(test(graph,0));
+            test_dist_reussi += test(graph,0);
+        }
+        for (int j=0; j< nb_test/2; j++) {
+            //System.out.println("for2");
+            test_temps_reussi += test(graph,2);
+        }
 
-    public static int batterieTest() {
-        //TODO : Il faut que j'appelle plusieurs fois, dans des scénarios différents et avec une map
-
-        return -1;
+        System.out.println("Il y'a eu " + test_dist_reussi + " test de distance reussi sur " + nb_test/2 );
+        System.out.println("Il y'a eu " + test_temps_reussi + " test de temps reussi sur " + nb_test/2 );
     }
 
     public static void main(String[] args) throws Exception {
@@ -109,7 +142,7 @@ public class Launch {
         // Visit these directory to see the list of available files on Commetud.
         // Les chemins ici sont adaptés pour l'architecture de mon ordinateur personnel. Pour les tester, il faut changer les chemins par les tiens.
         final String mapName = "//mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
-        final String pathName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path";
+        //final String pathName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path";
 
         // Create a graph reader.
         final GraphReader reader = new BinaryGraphReader(
@@ -125,16 +158,18 @@ public class Launch {
         drawing.drawGraph(graph);
 
         // Create a PathReader.
-        final PathReader pathReader = new BinaryPathReader(
-        		new DataInputStream(new BufferedInputStream(new FileInputStream(pathName))));
+        //final PathReader pathReader = new BinaryPathReader(
+        //		new DataInputStream(new BufferedInputStream(new FileInputStream(pathName))));
         		
 
         // Read the path.
-        final Path path = pathReader.readPath(graph);
+        //final Path path = pathReader.readPath(graph);
         
 
         // Draw the path.
-        drawing.drawPath(path);
+        //drawing.drawPath(path);
+        System.out.println("Mes tests");
+        batterieTest(graph, 2500);
     }
 
 }

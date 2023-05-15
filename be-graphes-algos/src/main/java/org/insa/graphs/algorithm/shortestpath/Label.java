@@ -63,7 +63,7 @@ public class Label implements Comparable<Label>{
    //Comparer 2 couts 
    public int compareTo(Label autre) {
       
-      return Double.valueOf(this.getCost()-autre.getCost()).intValue(); 
+      return Double.compare(this.getCost(),autre.getCost()); 
       
       
 

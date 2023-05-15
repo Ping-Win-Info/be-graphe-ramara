@@ -224,5 +224,13 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     public String toString() {
         return BinaryHeapFormatter.toStringTree(this, 8);
     }
+    public boolean exist(E x) {
+        for (int i=0; i<this.size(); i++) {
+            if (this.array.get(i)==x) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }
