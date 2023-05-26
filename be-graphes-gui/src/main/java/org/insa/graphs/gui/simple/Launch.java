@@ -75,14 +75,30 @@ public class Launch {
      ShortestPathData data = new ShortestPathData(graph, origin, dest, arcins); 
      DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(data);
      BellmanFordAlgorithm bellman = new BellmanFordAlgorithm(data);
+     AStarAlgorithm astar = new AStarAlgorithm(data);
      //je crée mes espaces solutions
      //ShortestPathSolution sol_d = dijkstra.run();
      //ShortestPathSolution sol_b = bellman.run();
+     
      Path path_d = dijkstra.run().getPath();
      Path path_b = bellman.run().getPath();
+     Path path_a = astar.run().getPath();
      //Il reste plus que à comparer ce qu'on veut 
-     if (path_b != null && path_d != null) {
-            
+     if (path_b != null && path_d != null && astar!=null) {
+        //Gérer les commentaires en fonction des tests souhaité
+
+        /*Bellman-Dijkstra */
+        // Path path_1 = path_b;
+        // Path path_2 = path_d;
+        
+        /*Bellman-AStar */
+        // Path path_1 = path_b;
+        // Path path_2 = path_a;
+
+        /*Dijkstra Astar*/
+        Path path_1 = path_d;
+        Path path_2 = path_a;
+
         
         if (scenario == 0) {
             //Pour voir les distances:
@@ -91,14 +107,16 @@ public class Launch {
             //System.out.println(path_b);
             //System.out.println(path_d);
             
-            boolean comparaison_dist = comparer_float(path_b.getLength(), path_d.getLength());
+
+            
+            boolean comparaison_dist = comparer_float(path_1.getLength(), path_2.getLength()); 
             if (comparaison_dist) {//Si ils sont égaux -> même distance, alors le test est validé
                 return 1;
             } else {
                 return 0;
             }
         } else if (scenario==2){ 
-            boolean comparaison_temps = comparer_float((float)(path_b.getMinimumTravelTime()), (float)(path_d.getMinimumTravelTime()));
+            boolean comparaison_temps = comparer_float((float)(path_1.getMinimumTravelTime()), (float)(path_2.getMinimumTravelTime()));
             if (comparaison_temps) {
                 return 1;
             } else {
@@ -169,7 +187,7 @@ public class Launch {
         // Draw the path.
         //drawing.drawPath(path);
         System.out.println("Mes tests");
-        batterieTest(graph, 2500);
+        batterieTest(graph, 1500);
     }
 
 }
