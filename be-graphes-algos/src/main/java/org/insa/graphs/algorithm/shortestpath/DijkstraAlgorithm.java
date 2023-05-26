@@ -18,21 +18,26 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         super(data);
 
     }
-    
-    @Override
-    protected ShortestPathSolution doRun() {
-    	 final ShortestPathData data = getInputData();
-         ShortestPathSolution solution = null;
-         Graph graph= data.getGraph();
-         Label[] labels = new Label[graph.size()];
-
-         //Initialisation//TODO (AStar) Mettre l'initialisation en dehors du doRun() et juste redéfinir la méthode de l'initialisation dans AStar avec LabelStar.
-         //On a besoin d'init les labels de tout le monde avant de mettre des choses dedans
-         int i =0;
+    final ShortestPathData data = getInputData();
+    Graph graph= data.getGraph();
+    Label[] labels = new Label[graph.size()];
+    protected void init(){
+        int i =0;
          for (Node node : graph.getNodes()) {//On parcours tout les sommets du graphe
             labels[i]=new Label(node, false, null);//NB: on les mets tous avec un cout infini ( par défault )
             i++;
          }
+
+    }
+    @Override
+    protected ShortestPathSolution doRun() {
+    	 
+         ShortestPathSolution solution = null;
+         
+
+         //Initialisation//TODO (AStar) Mettre l'initialisation en dehors du doRun() et juste redéfinir la méthode de l'initialisation dans AStar avec LabelStar.
+         //On a besoin d'init les labels de tout le monde avant de mettre des choses dedans
+         init();
 
          //coût de chemin à l'origine = 0
          labels[data.getOrigin().getId()].setCout(0);
@@ -53,7 +58,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
          while (!queue.isEmpty() && !trouver) { //tant qu'il y'a des éléments dans la pile (=non marqué)
             Label X = queue.deleteMin(); //NB : à la première itération ça sera le sommet origine
             X.setMarque(true); //On le marque à vrai
-            //notifyNodeMarked(X.getSommet()); //TODO : le réactiver pour la version final ( je désactive pour les tests )
+            notifyNodeMarked(X.getSommet()); //TODO : le réactiver pour la version final ( je désactive pour les tests )
             // et on le retire
             
             trouver = (data.getDestination()==X.getSommet()); //on arrete la boucle une fois qu'on a trouver notre node d'arrivée
